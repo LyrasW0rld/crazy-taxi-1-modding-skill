@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 2,
+  "crazyTaxiExe": null,
+  "gameDir": null,
+  "frameworkDll": null,
+  "frameworkStatus": null,
+  "toolboxDir": "Toolbox",
+  "toolchain": null,
+  "preferredCompiler": null,
+  "mcpServers": {}
+}

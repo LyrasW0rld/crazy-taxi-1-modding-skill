@@ -1,0 +1,706 @@
+[
+ {
+  "id": "VKK-001",
+  "date": "2026-11-14",
+  "claim": "The master texture entry array at 0x01B09938 uses a 24-byte slot stride: pTexObj +0x00, flags +0x04, width +0x08, height +0x0C, pData +0x10, reserved +0x14; all static xrefs to the base come from LoadStageTexture (sub_48B7A0).",
+  "evidence": "IDA 9.1 audit: dword_1B09938 data item with 40 xrefs, all in sub_48B7A0; field offsets +0x00..+0x14 tile the documented 24-byte stride exactly (verdict agent-8, G065).",
+  "verification": {
+   "tier": 2,
+   "methods": [
+    "re-audit-2026-11-06-notes",
+    "ida-decompile-idat91"
+   ],
+   "session": "2026-11-14-offset-audit"
+  },
+  "confidence": "high",
+  "related": [
+   {
+    "identifier": "masterBase",
+    "address": "0x01B09938"
+   },
+   {
+    "identifier": "LoadStageTexture",
+    "address": "0x0048B7A0"
+   }
+  ],
+  "status": "active",
+  "supersedes": null,
+  "superseded_by": null,
+  "tags": [
+   "textures",
+   "master-slot-map",
+   "struct-layout"
+  ]
+ },
+ {
+  "id": "VKK-002",
+  "date": "2026-11-14",
+  "claim": "0x0048BA38 (SEGA_PC_CENSORSHIP_SWITCH) holds the original byte sequence 3D 80 AC BF 0C (cmp eax, 0CBFAC80h) followed by a conditional jump (0F 84 ... jz loc_48C007); the documented E9 5E 06 00 00 (jmp 0x0048C09B) is the 5-byte bypass PATCH to be written AT 0x0048BA38, not the shipped content - the patch site verifies byte-exactly.",
+  "evidence": "IDA 9.1 audit disasm window at 0x0048BA38 shows the cmp + jz bytes; the offset entry documents the E9 sequence as the replacement patch whose target 0x0048C09B computes only if written at 0x0048BA38 (verdict agent-2, G015).",
+  "verification": {
+   "tier": 2,
+   "methods": [
+    "re-audit-2026-11-06-notes",
+    "ida-decompile-idat91"
+   ],
+   "session": "2026-11-14-offset-audit"
+  },
+  "confidence": "high",
+  "related": [
+   {
+    "identifier": "SEGA_PC_CENSORSHIP_SWITCH",
+    "address": "0x0048BA38"
+   }
+  ],
+  "status": "active",
+  "supersedes": null,
+  "superseded_by": null,
+  "tags": [
+   "censorship",
+   "licensed-brands",
+   "byte-patch",
+   "dreamcast-restoration"
+  ]
+ },
+ {
+  "id": "VKK-003",
+  "date": "2026-11-14",
+  "claim": "The rear wheel steer BAM words (0x01662258, 0x016622DC) each have exactly ONE write xref and ZERO read xrefs in the binary - rear-wheel steering is written by init/reset (sub_518F30) but ignored natively; the framework drives it (4WS).",
+  "evidence": "IDA 9.1 audit xref lists: word_1662258 and word_16622DC have a single write xref each and no readers; front words additionally get a reader in sub_517370 (verdict agent-7, G052/G053).",
+  "verification": {
+   "tier": 2,
+   "methods": [
+    "re-audit-2026-11-06-notes",
+    "ida-decompile-idat91"
+   ],
+   "session": "2026-11-14-offset-audit"
+  },
+  "confidence": "high",
+  "related": [
+   {
+    "identifier": "ADDR_WHEEL_RL_STEER_BAM",
+    "address": "0x01662258"
+   },
+   {
+    "identifier": "ADDR_WHEEL_RR_STEER_BAM",
+    "address": "0x016622DC"
+   }
+  ],
+  "status": "active",
+  "supersedes": null,
+  "superseded_by": null,
+  "tags": [
+   "4ws",
+   "drivetrain",
+   "steering",
+   "wheel-structure"
+  ]
+ },
+ {
+  "id": "VKK-004",
+  "date": "2026-11-14",
+  "claim": "All four wheel steer fields are 16-bit word items with struct stride 0x84 (bases 0x016620D0 front, 0x01662154 front-right); sub_518F30 is the common init/reset writer for speed scalar, yaw rate and all four steer words.",
+  "evidence": "IDA 9.1 audit: word_ items at 0x01662150/0x016621D4/0x01662258/0x016622DC; write xrefs in sub_518F30, front-word reader in sub_517370 (verdict agent-7, G050-G053).",
+  "verification": {
+   "tier": 2,
+   "methods": [
+    "re-audit-2026-11-06-notes",
+    "ida-decompile-idat91"
+   ],
+   "session": "2026-11-14-offset-audit"
+  },
+  "confidence": "high",
+  "related": [
+   {
+    "identifier": "ADDR_WHEEL_FL_STEER_BAM",
+    "address": "0x01662150"
+   },
+   {
+    "identifier": "ADDR_WHEEL_FR_STEER_BAM",
+    "address": "0x016621D4"
+   }
+  ],
+  "status": "active",
+  "supersedes": null,
+  "superseded_by": null,
+  "tags": [
+   "4ws",
+   "drivetrain",
+   "bam",
+   "int16"
+  ]
+ },
+ {
+  "id": "VKK-005",
+  "date": "2026-11-14",
+  "claim": "0x004EA3A8 is the 'call sub_4F2ED0' site inside Main_GameLoop (sub_4EA2D0); sub_4F2ED0 is the input-commit routine latching through dword_1B7A8D4 - the ADDR_MAIN_INPUT_LOOP and instruction-identifier entries described the same verified fact.",
+  "evidence": "IDA 9.1 audit: byte-exact call at 0x004EA3A8, type-17 xref to sub_4F2ED0, latch dword_1B7A8D4 in the decompile (verdict agent-3, G025/G084).",
+  "verification": {
+   "tier": 2,
+   "methods": [
+    "re-audit-2026-11-06-notes",
+    "ida-decompile-idat91"
+   ],
+   "session": "2026-11-14-offset-audit"
+  },
+  "confidence": "high",
+  "related": [
+   {
+    "identifier": "ADDR_MAIN_INPUT_LOOP",
+    "address": "0x004EA3A8"
+   },
+   {
+    "identifier": "Main_GameLoop",
+    "address": "0x004EA2D0"
+   }
+  ],
+  "status": "active",
+  "supersedes": null,
+  "superseded_by": null,
+  "tags": [
+   "input",
+   "main-loop",
+   "function-hooks"
+  ]
+ },
+ {
+  "id": "VKK-006",
+  "date": "2026-11-14",
+  "claim": "0x005A04EC is ONE .rdata float (1800.0f) with exactly three xref sites (sub_519890, sub_525450, sub_526290); ADDR_LOAD_CHUNKS_RADIUS and the former ADDR_SPAWN_DIST_TRAFFIC were two names for the same constant - one entry now carries the alias.",
+  "evidence": "IDA 9.1 audit: raw float 1800.0f, xref list contains exactly three sites; the merged entry's claimed users 0x00504090/0x005051D0 are absent from the xref list (verdict agent-5, G041).",
+  "verification": {
+   "tier": 2,
+   "methods": [
+    "re-audit-2026-11-06-notes",
+    "ida-decompile-idat91"
+   ],
+   "session": "2026-11-14-offset-audit"
+  },
+  "confidence": "high",
+  "related": [
+   {
+    "identifier": "ADDR_LOAD_CHUNKS_RADIUS",
+    "address": "0x005A04EC"
+   }
+  ],
+  "status": "active",
+  "supersedes": null,
+  "superseded_by": null,
+  "tags": [
+   "streaming",
+   "rdata",
+   "radius",
+   "alias-merge"
+  ]
+ },
+ {
+  "id": "VKK-007",
+  "date": "2026-11-14",
+  "claim": "The camera look-at function 0x0049B200 uses D3DXMatrixLookAtRH (right-handed) with an extra BAM roll argument - the entry's former 'LookAtLH' claim was wrong and is corrected.",
+  "evidence": "IDA 9.1 audit decompile of sub_49B200: D3DXMatrixLookAtRH(v23, v22, &v14, &v19) plus BAM roll arg (verdict agent-3, G017). Single-method (this session) - re-verify before building a mod on the RH convention.",
+  "verification": {
+   "tier": 1,
+   "methods": [
+    "ida-decompile-idat91"
+   ],
+   "session": "2026-11-14-offset-audit"
+  },
+  "confidence": "high",
+  "related": [
+   {
+    "identifier": "ADDR_CAM_LOOKAT_FN",
+    "address": "0x0049B200"
+   }
+  ],
+  "status": "provisional",
+  "supersedes": null,
+  "superseded_by": null,
+  "tags": [
+   "camera",
+   "d3dx",
+   "lookat",
+   "matrix"
+  ]
+ },
+ {
+  "id": "VKK-008",
+  "date": "2026-11-14",
+  "claim": "Two CRI ADX functions documented as __cdecl are actually __usercall: sub_42A250 (voice-track-header unpacker: a1@<cl>, a2@<ebx>, a3@<edi>, a4@<esi>) and sub_42A5C0 (16-bit word-copy, result@<eax>) - a plain __cdecl detour on either corrupts arguments (B9 hazard class).",
+  "evidence": "IDA 9.1 audit Hex-Rays markings __usercall on sub_42A250 and sub_42A5C0 (verdict agent-1, G002/G005). Single-method (this session).",
+  "verification": {
+   "tier": 1,
+   "methods": [
+    "ida-decompile-idat91"
+   ],
+   "session": "2026-11-14-offset-audit"
+  },
+  "confidence": "high",
+  "related": [
+   {
+    "identifier": "ADXUnpackVoiceTrackHeader",
+    "address": "0x0042A250"
+   },
+   {
+    "identifier": "ADXMemcpy16",
+    "address": "0x0042A5C0"
+   }
+  ],
+  "status": "provisional",
+  "supersedes": null,
+  "superseded_by": null,
+  "tags": [
+   "cri-adx",
+   "calling-convention",
+   "usercall",
+   "detour-hazard"
+  ]
+ },
+ {
+  "id": "VKK-009",
+  "date": "2026-11-14",
+  "claim": "The SegaRenderer function family is __thiscall (ResetVTable sub_47E8B0, SetupViewportAndScissor sub_47EA50, texture-creation wrapper sub_481BB0, IsDeviceReady sub_482A70 = 9-byte 'return this[3] != 0'), and the session-timer/fares init sub_4FF680 is __thiscall too - former __cdecl claims were wrong.",
+  "evidence": "IDA 9.1 audit: mov esi,ecx / mov ebx,ecx prologues, device=[this+18h] pattern, retn 18h; int *__thiscall sub_4FF680(void *this) decompile (verdict agent-2 G007/G008/G012/G014, agent-5 G028). Single-method (this session).",
+  "verification": {
+   "tier": 1,
+   "methods": [
+    "ida-decompile-idat91"
+   ],
+   "session": "2026-11-14-offset-audit"
+  },
+  "confidence": "high",
+  "related": [
+   {
+    "identifier": "SegaRenderer::ResetVTable",
+    "address": "0x0047E8B0"
+   },
+   {
+    "identifier": "SegaRenderer::SetupViewportAndScissor",
+    "address": "0x0047EA50"
+   },
+   {
+    "identifier": "InitGameSessionTimerAndFares",
+    "address": "0x004FF680"
+   }
+  ],
+  "status": "provisional",
+  "supersedes": null,
+  "superseded_by": null,
+  "tags": [
+   "sega-renderer",
+   "calling-convention",
+   "thiscall",
+   "detour-hazard"
+  ]
+ },
+ {
+  "id": "VKK-010",
+  "date": "2026-11-14",
+  "claim": "0x00481220 and 0x00482600 are NOT function starts: 0x00481220 is the jz short loc_481232 inside __usercall sub_481200 (SetTexture), and 0x00482600 is a prologue instruction of __thiscall sub_4825F0 (InitDeviceParameters, inside the SEH setup sequence) - both entries are corrected to interior-address annotations.",
+  "evidence": "IDA 9.1 audit: get_func boundaries place both addresses inside enclosing functions; prologue disasm windows quoted in verdict agent-2 (G011/G013). Single-method (this session).",
+  "verification": {
+   "tier": 1,
+   "methods": [
+    "ida-decompile-idat91"
+   ],
+   "session": "2026-11-14-offset-audit"
+  },
+  "confidence": "high",
+  "related": [
+   {
+    "identifier": "SegaRenderer::SetTexture",
+    "address": "0x00481200"
+   },
+   {
+    "identifier": "sub_4825F0_interior_0x00482600",
+    "address": "0x00482600"
+   }
+  ],
+  "status": "provisional",
+  "supersedes": null,
+  "superseded_by": null,
+  "tags": [
+   "interior-address",
+   "function-boundaries",
+   "detour-hazard"
+  ]
+ },
+ {
+  "id": "VKK-011",
+  "date": "2026-11-14",
+  "claim": "The analog stick deadzone constant at 0x0134A274 defaults to 0.24f (raw dword 0x3E75C28F), not the formerly documented 0.25f; evidenced readers are in the def_485197 region, sub_486770 and sub_4870A0.",
+  "evidence": "IDA 9.1 audit data dump 'dd 0.23999999' at 0x0134A274 + xref list (verdict agent-1, G042). Single-method (this session).",
+  "verification": {
+   "tier": 1,
+   "methods": [
+    "ida-decompile-idat91"
+   ],
+   "session": "2026-11-14-offset-audit"
+  },
+  "confidence": "high",
+  "related": [
+   {
+    "identifier": "ADDR_ANALOG_DEADZONE",
+    "address": "0x0134A274"
+   }
+  ],
+  "status": "provisional",
+  "supersedes": null,
+  "superseded_by": null,
+  "tags": [
+   "input",
+   "deadzone",
+   "float",
+   "rdata-correction"
+  ]
+ },
+ {
+  "id": "VKK-012",
+  "date": "2026-11-14",
+  "claim": "0x004EA430 is NOT a container/sprite-archive address: it is the game-init loading state machine (dword_1EAE980 0->1->2->3) that queues sub_4012B0(file, 11) loads for polDC0.BIN, texDC0.BIN and all 12 sprite archives, and sets master-texture baseIdx dword_1B7A6E0 = 1500. The three former 'archive at this address' entries were mis-attributed data claims.",
+  "evidence": "IDA 9.1 audit decompile of sub_4EA430: state machine queuing sprCOMM/sprC*/sprM*.BIN loads; no container lives there; sprCITA absent from the load list (verdict agent-5, G026). Single-method (this session).",
+  "verification": {
+   "tier": 1,
+   "methods": [
+    "ida-decompile-idat91"
+   ],
+   "session": "2026-11-14-offset-audit"
+  },
+  "confidence": "high",
+  "related": [
+   {
+    "identifier": "GameInit_LoadSpriteArchives (sub_4EA430)",
+    "address": "0x004EA430"
+   }
+  ],
+  "status": "provisional",
+  "supersedes": null,
+  "superseded_by": null,
+  "tags": [
+   "game-init",
+   "sprite-archives",
+   "state-machine",
+   "misattribution-fix"
+  ]
+ },
+ {
+  "id": "VKK-013",
+  "date": "2026-11-14",
+  "claim": "0x0051D940 is a 12-case camera state machine (__thiscall, FOV flt_166158C switching 60/40, camera pos dword_16614AC/B0/B4, look-at via sub_50CE40) - renamed ADDR_CAMERA_UPDATE_FN; it is NOT the vehicle physics update (authority sub_519890).",
+  "evidence": "IDA 9.1 audit decompile of sub_51D940 quoted in verdict agent-4 (G037); corroborates the pre-existing 'camera_update' notes (prior RE audit) - decompile now confirms them.",
+  "verification": {
+   "tier": 2,
+   "methods": [
+    "re-audit-2026-11-06-notes",
+    "ida-decompile-idat91"
+   ],
+   "session": "2026-11-14-offset-audit"
+  },
+  "confidence": "high",
+  "related": [
+   {
+    "identifier": "ADDR_CAMERA_UPDATE_FN",
+    "address": "0x0051D940"
+   }
+  ],
+  "status": "active",
+  "supersedes": null,
+  "superseded_by": null,
+  "tags": [
+   "camera",
+   "state-machine",
+   "naming-trap",
+   "physics-authority"
+  ]
+ },
+ {
+  "id": "VKK-014",
+  "date": "2026-11-14",
+  "claim": "0x0050BED0 (CollisionIntersect) is a __usercall(esi, edx) point-vs-convex-polygon half-plane test with plane-height output; the 'True vehicle-to-vehicle collision' label was narrowed (impulse car-vs-car is 0x00510400).",
+  "evidence": "IDA 9.1 audit decompile of sub_50BED0: __usercall(esi, edx), half-plane loop, plane-height output; sole caller sub_50C6D0 (verdict agent-4, G034). Single-method (this session).",
+  "verification": {
+   "tier": 1,
+   "methods": [
+    "ida-decompile-idat91"
+   ],
+   "session": "2026-11-14-offset-audit"
+  },
+  "confidence": "medium",
+  "related": [
+   {
+    "identifier": "ADDR_COLLISION_INTERSECT",
+    "address": "0x0050BED0"
+   },
+   {
+    "identifier": "ADDR_SOLVE_RIGID_BODY",
+    "address": "0x00510400"
+   }
+  ],
+  "status": "provisional",
+  "supersedes": null,
+  "superseded_by": null,
+  "tags": [
+   "collision",
+   "usercall",
+   "semantics-correction"
+  ]
+ },
+ {
+  "id": "VKK-015",
+  "date": "2026-11-14",
+  "claim": "IAT slot 0x005342B4 is exactly '.idata extrn D3DXCreateTextureFromFileInMemoryEx:dword' with sole xref 0x00522484; the JPK_UI_Packages and Standalone_DDS_PNG entries at the same address are hook-pathway views of that IAT entry (data_type corrected to void** (IAT Entry)).",
+  "evidence": "IDA 9.1 audit: .idata extrn item name and single xref at 0x00522484 (verdict agent-2, G040); matches fundamentals B13's citation.",
+  "verification": {
+   "tier": 2,
+   "methods": [
+    "re-audit-2026-11-06-notes",
+    "ida-decompile-idat91"
+   ],
+   "session": "2026-11-14-offset-audit"
+  },
+  "confidence": "high",
+  "related": [
+   {
+    "identifier": "IAT_D3DXCreateTextureFromFileInMemoryEx",
+    "address": "0x005342B4"
+   }
+  ],
+  "status": "active",
+  "supersedes": null,
+  "superseded_by": null,
+  "tags": [
+   "iat",
+   "d3dx",
+   "texture-hook"
+  ]
+ },
+ {
+  "id": "VKK-016",
+  "date": "2026-11-14",
+  "claim": "The three 'WorldMatrix4x4::0.0f' W-component cells (0x0166153C/4C/5C, matrix base 0x01661530) hold 0xFFFFFFFF (NaN as float) in the static image with zero xrefs - the 0.0f value is runtime-initialized; identifiers were made unique (Right_W_0.0f / Up_W_0.0f / Forward_W_0.0f) and the value claim is runtime-only until dynamically confirmed.",
+  "evidence": "IDA 9.1 audit: region 0x01661530..0x0166156C undefined, raw dwords 0xFFFFFFFF, no xrefs (verdict agent-8, G077/G081). Single-method (this session); needs a live memory read to confirm 0.0f at runtime.",
+  "verification": {
+   "tier": 1,
+   "methods": [
+    "ida-decompile-idat91"
+   ],
+   "session": "2026-11-14-offset-audit"
+  },
+  "confidence": "medium",
+  "related": [
+   {
+    "identifier": "WorldMatrix4x4::Right_W_0.0f",
+    "address": "0x0166153C"
+   },
+   {
+    "identifier": "WorldMatrix4x4::Up_W_0.0f",
+    "address": "0x0166154C"
+   },
+   {
+    "identifier": "WorldMatrix4x4::Forward_W_0.0f",
+    "address": "0x0166155C"
+   }
+  ],
+  "status": "provisional",
+  "supersedes": null,
+  "superseded_by": null,
+  "tags": [
+   "matrix",
+   "static-image-uninitialized",
+   "runtime-only",
+   "open-verification"
+  ]
+ },
+ {
+  "id": "VKK-017",
+  "date": "2026-11-14",
+  "claim": "ClearD3DState (0x00481100) is a 16-stage SetTexture(stage, NULL) loop with __usercall a1@<esi> - the naked-hook framing ('hkClearD3DStateNaked') was a mod-side view and now survives only as an alias tag.",
+  "evidence": "IDA 9.1 audit decompile/disasm of sub_481100 (verdict agent-2, G009). Single-method (this session).",
+  "verification": {
+   "tier": 1,
+   "methods": [
+    "ida-decompile-idat91"
+   ],
+   "session": "2026-11-14-offset-audit"
+  },
+  "confidence": "high",
+  "related": [
+   {
+    "identifier": "ClearD3DState",
+    "address": "0x00481100"
+   }
+  ],
+  "status": "provisional",
+  "supersedes": null,
+  "superseded_by": null,
+  "tags": [
+   "d3d9",
+   "crash-guards",
+   "usercall",
+   "alias-merge"
+  ]
+ },
+ {
+  "id": "VKK-018",
+  "date": "2026-11-14",
+  "claim": "The two g_CriWorkerYieldFlag instances are distinct variables with disjoint accessor sets: 0x0146A9BC (renamed g_CriDecompressWorkerFlag; readers sub_419DB0/sub_419E30 = CRI_WorkerThread_Decompress) and 0x0146A9AC (keeps g_CriWorkerYieldFlag; readers sub_419ED0/sub_41A1C0/sub_41A460).",
+  "evidence": "IDA 9.1 audit xref sets of both addresses are disjoint and match the two worker threads (verdict agent-1, G078/G082). Yield semantics not re-verifiable from the extract - single-method (this session).",
+  "verification": {
+   "tier": 1,
+   "methods": [
+    "ida-decompile-idat91"
+   ],
+   "session": "2026-11-14-offset-audit"
+  },
+  "confidence": "medium",
+  "related": [
+   {
+    "identifier": "g_CriWorkerYieldFlag",
+    "address": "0x0146A9AC"
+   },
+   {
+    "identifier": "g_CriDecompressWorkerFlag",
+    "address": "0x0146A9BC"
+   }
+  ],
+  "status": "provisional",
+  "supersedes": null,
+  "superseded_by": null,
+  "tags": [
+   "cri-adx",
+   "worker-threads",
+   "flag",
+   "rename"
+  ]
+ },
+ {
+  "id": "VKK-019",
+  "date": "2026-11-14",
+  "claim": "The game-init state machine sets the session timer (0x016A41A4) to 10800/18000/36000 frames (=3/5/10 min at 60 Hz, consistent with B4) or 3300 - the timer's own boilerplate function claim was replaced by these verified write sites.",
+  "evidence": "IDA 9.1 audit decompile of sub_4FF680 (thiscall) setting dword_16A41A4 to those values (verdict agent-5, G028). Single-method (this session).",
+  "verification": {
+   "tier": 1,
+   "methods": [
+    "ida-decompile-idat91"
+   ],
+   "session": "2026-11-14-offset-audit"
+  },
+  "confidence": "high",
+  "related": [
+   {
+    "identifier": "ADDR_GAME_TIMER",
+    "address": "0x016A41A4"
+   },
+   {
+    "identifier": "InitGameSessionTimerAndFares",
+    "address": "0x004FF680"
+   }
+  ],
+  "status": "provisional",
+  "supersedes": null,
+  "superseded_by": null,
+  "tags": [
+   "timer",
+   "session",
+   "60hz",
+   "frames"
+  ]
+ },
+ {
+  "id": "VKK-020",
+  "date": "2026-11-14",
+  "claim": "The cheat-flag accessor facts are xref-verified (write sites in the Sega cheat cluster sub_4EAB50/sub_4E3870/sub_4E7770 for 0x0164FA58, 0x01662304, 0x016AA3C0/C4, 0x016EEEA0, 0x016EF0BC); RUNTIME-ONLY CAVEAT: all these cells hold 0xFFFFFFFF in the static image, so their default/inactive values remain unverified until a live read.",
+  "evidence": "IDA 9.1 audit data dumps 0xFFFFFFFF + xref lists (verdict agent-6, G043/G054/G059-G063). Cross-check with prior RE-audit notes = session replication for the accessor facts; the default-value half of this claim is runtime-only and must be re-verified before a mod builds on it.",
+  "verification": {
+   "tier": 2,
+   "methods": [
+    "re-audit-2026-11-06-notes",
+    "ida-decompile-idat91"
+   ],
+   "session": "2026-11-14-offset-audit"
+  },
+  "confidence": "high",
+  "related": [
+   {
+    "identifier": "ADDR_SEGA_UNLOCK_ALL",
+    "address": "0x0164FA58"
+   },
+   {
+    "identifier": "ADDR_SEGA_ANOTHER_DAY",
+    "address": "0x01662304"
+   }
+  ],
+  "status": "active",
+  "supersedes": null,
+  "superseded_by": null,
+  "tags": [
+   "cheats",
+   "static-image-uninitialized",
+   "uninitialized",
+   "xref-evidence"
+  ]
+ },
+ {
+  "id": "VKK-021",
+  "date": "2026-11-14",
+  "claim": "0x22B090 (Axel_Struct_RestPose_motDC_Frame0) is below the 0x00400000 image base and unmapped in VA space - it is a FILE offset into the motDC/container file, not a memory address; the entry stays with an explicit FILE-offset note (documented non-canonical form).",
+  "evidence": "IDA 9.1 audit: target 0x0022B090 unmapped (segment null) in the loaded binary (verdict agent-8, G085).",
+  "verification": {
+   "tier": 2,
+   "methods": [
+    "re-audit-2026-11-06-notes",
+    "ida-decompile-idat91"
+   ],
+   "session": "2026-11-14-offset-audit"
+  },
+  "confidence": "high",
+  "related": [
+   {
+    "identifier": "Axel_Struct_RestPose_motDC_Frame0",
+    "address": "0x22B090"
+   }
+  ],
+  "status": "active",
+  "supersedes": null,
+  "superseded_by": null,
+  "tags": [
+   "file-offset",
+   "axel",
+   "motdc",
+   "address-notation"
+  ]
+ },
+ {
+  "id": "VKK-022",
+  "date": "2026-11-14",
+  "claim": "Runtime heap/VRAM addresses (Axel model slots 0x0C56B320/0x0C56CEF8, stage map staging base 0x0C5F0000, texDC0-3 pool base 0x0CB40000 within the 0x0CB40000-0x0F000000 VRAM pool) are unmapped in the static binary - they are verifiable ONLY dynamically (running game); the pool-range descriptor plus per-stage/per-container entries are intentional multiplexed views, not contradictions.",
+  "evidence": "IDA 9.1 audit: all these targets unmapped (segment null); notes describe mutually exclusive per-stage loads and dynamically swapped containers (verdict agent-8, G070-G073).",
+  "verification": {
+   "tier": 2,
+   "methods": [
+    "re-audit-2026-11-06-notes",
+    "ida-decompile-idat91"
+   ],
+   "session": "2026-11-14-offset-audit"
+  },
+  "confidence": "high",
+  "related": [
+   {
+    "identifier": "SEGA_VRAM_POOL_RANGE",
+    "address": "0x0CB40000"
+   },
+   {
+    "identifier": "Stage1_Arcade_Map",
+    "address": "0x0C5F0000"
+   }
+  ],
+  "status": "active",
+  "supersedes": null,
+  "superseded_by": null,
+  "tags": [
+   "vram",
+   "heap",
+   "runtime-only",
+   "seg-containers"
+  ]
+ }
+]

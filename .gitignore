@@ -1,0 +1,15 @@
+# Local agent-session artifacts - NEVER upload (owner requirement)
+.zcode/
+
+# Per-machine tooling and state (recreated by scripts/setup_toolbox.py, scripts/find_game.py)
+Toolbox/
+config/environment.json
+
+# Local rollback snapshots
+*backup*.json
+
+# Python / OS noise
+__pycache__/
+*.pyc
+Thumbs.db
+.DS_Store
